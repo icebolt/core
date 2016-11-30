@@ -36,6 +36,7 @@ namespace OC\Group;
 
 use OC\Hooks\PublicEmitter;
 use OCP\GroupInterface;
+use OCP\IGroupBackend;
 use OCP\IGroupManager;
 
 /**
@@ -154,19 +155,27 @@ class Manager extends PublicEmitter implements IGroupManager {
 
 	/**
 	 * @param string $gid
+	 * @param string $displayName
 	 * @return \OCP\IGroup
 	 */
-	protected function getGroupObject($gid) {
+	protected function getGroupObject($gid, $displayName = null) {
 		$backends = [];
 		foreach ($this->backends as $backend) {
-			if ($backend->groupExists($gid)) {
+			if ($backend instanceof IGroupBackend) {
+				$groupData = $backend->getGroup($gid);
+				// take the display name from the first backend that has a non-null one
+				if (is_null($displayName) && isset($groupData['displayName'])) {
+					$displayName = $groupData['displayName'];
+				}
+				$backends[] = $backend;
+			} else if ($backend->groupExists($gid)) {
 				$backends[] = $backend;
 			}
 		}
 		if (count($backends) === 0) {
 			return null;
 		}
-		$this->cachedGroups[$gid] = new Group($gid, $backends, $this->userManager, $this);
+		$this->cachedGroups[$gid] = new Group($gid, $backends, $this->userManager, $this, $displayName);
 		return $this->cachedGroups[$gid];
 	}
 

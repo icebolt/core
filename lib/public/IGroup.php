@@ -36,6 +36,14 @@ interface IGroup {
 	public function getGID();
 
 	/**
+	 * Returns the group display name
+	 *
+	 * @return string
+	 * @since 9.2
+	 */
+	public function getDisplayName();
+
+	/**
 	 * get all users in the group
 	 *
 	 * @return \OCP\IUser[]
