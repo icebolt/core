@@ -218,7 +218,7 @@ class ShareesController extends OCSController  {
 		$this->result['groups'] = $this->result['exact']['groups'] = [];
 
 		$groups = $this->groupManager->search($search, $this->limit, $this->offset);
-		$groups = array_map(function (IGroup $group) { return $group->getGID(); }, $groups);
+		$groupIds = array_map(function (IGroup $group) { return $group->getGID(); }, $groups);
 
 		if (!$this->shareeEnumeration || sizeof($groups) < $this->limit) {
 			$this->reachedEndFor[] = 'groups';
@@ -229,13 +229,18 @@ class ShareesController extends OCSController  {
 			// Intersect all the groups that match with the groups this user is a member of
 			$userGroups = $this->groupManager->getUserGroups($this->userSession->getUser());
 			$userGroups = array_map(function (IGroup $group) { return $group->getGID(); }, $userGroups);
-			$groups = array_intersect($groups, $userGroups);
+			$groupIds = array_intersect($groupIds, $userGroups);
 		}
 
-		foreach ($groups as $gid) {
-			if (strtolower($gid) === strtolower($search)) {
+		foreach ($groups as $group) {
+			// FIXME: use a more efficient approach
+			$gid = $group->getGID();
+			if (!in_array($gid, $groupIds)) {
+				continue;
+			}
+			if (strtolower($gid) === strtolower($search) || strtolower($group->getDisplayName()) === strtolower($search)) {
 				$this->result['exact']['groups'][] = [
-					'label' => $gid,
+					'label' => $group->getDisplayName(),
 					'value' => [
 						'shareType' => Share::SHARE_TYPE_GROUP,
 						'shareWith' => $gid,
@@ -243,7 +248,7 @@ class ShareesController extends OCSController  {
 				];
 			} else {
 				$this->result['groups'][] = [
-					'label' => $gid,
+					'label' => $group->getDisplayName(),
 					'value' => [
 						'shareType' => Share::SHARE_TYPE_GROUP,
 						'shareWith' => $gid,
@@ -258,7 +263,7 @@ class ShareesController extends OCSController  {
 			$group = $this->groupManager->get($search);
 			if ($group instanceof IGroup && (!$this->shareWithGroupOnly || in_array($group->getGID(), $userGroups))) {
 				array_push($this->result['exact']['groups'], [
-					'label' => $group->getGID(),
+					'label' => $group->getDisplayName(),
 					'value' => [
 						'shareType' => Share::SHARE_TYPE_GROUP,
 						'shareWith' => $group->getGID(),
