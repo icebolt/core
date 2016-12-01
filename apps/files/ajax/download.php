@@ -30,13 +30,18 @@
 OCP\User::checkLoggedIn();
 \OC::$server->getSession()->close();
 
-// files can be an array with multiple "files[]=one.txt&files[]=two.txt" or a single file with "files=filename.txt"
+// files must be an array with multiple "files[]=one.txt&files[]=two.txt"
 $files_list = isset($_GET['files']) ? $_GET['files'] : '';
 $dir = isset($_GET['dir']) ? (string)$_GET['dir'] : '';
 
-// in case we get only a single file
+if (is_string($files_list) && strlen($filesList) === 0) {
+	// this will download everything in the given dir
+	// (this weird format is what the download API expects)
+	$files_list = [''];
+}
+
 if (!is_array($files_list)) {
-	$files_list = [(string)$files_list];
+	\OC_Response::setStatus(\OC_Response::STATUS_BAD_REQUEST);
 }
 
 /**

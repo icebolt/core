@@ -110,12 +110,16 @@ describe('OCA.Sharing.PublicApp tests', function() {
 
 			it('returns correct download URL for single files', function() {
 				expect(fileList.getDownloadUrl('some file.txt'))
-					.toEqual(OC.webroot + '/index.php/s/sh4tok/download?path=%2Fsubdir&files=some%20file.txt');
+					.toEqual(OC.webroot + '/index.php/s/sh4tok/download?path=%2Fsubdir&files[]=some%20file.txt');
 				expect(fileList.getDownloadUrl('some file.txt', '/anotherpath/abc'))
-					.toEqual(OC.webroot + '/index.php/s/sh4tok/download?path=%2Fanotherpath%2Fabc&files=some%20file.txt');
+					.toEqual(OC.webroot + '/index.php/s/sh4tok/download?path=%2Fanotherpath%2Fabc&files[]=some%20file.txt');
 				fileList.changeDirectory('/');
 				expect(fileList.getDownloadUrl('some file.txt'))
-					.toEqual(OC.webroot + '/index.php/s/sh4tok/download?path=%2F&files=some%20file.txt');
+					.toEqual(OC.webroot + '/index.php/s/sh4tok/download?path=%2F&files[]=some%20file.txt');
+			});
+			it('returns correct download URL for single file in array', function() {
+				expect(fileList.getDownloadUrl(['a b c.txt']))
+					.toEqual(OC.webroot + '/index.php/s/sh4tok/download?path=%2Fsubdir&files[]=a%20b%20c.txt');
 			});
 			it('returns correct download URL for multiple files', function() {
 				expect(fileList.getDownloadUrl(['a b c.txt', 'd e f.txt']))

@@ -156,18 +156,17 @@ OCA.Sharing.PublicApp = {
 
 		if (this.fileList) {
 			// TODO: move this to a separate PublicFileList class that extends OCA.Files.FileList (+ unit tests)
-			this.fileList.getDownloadUrl = function (filename, dir, isDir) {
+			this.fileList.getDownloadUrl = function (filename, dir) {
 				var path = dir || this.getCurrentDirectory();
 				var base = OC.generateUrl('/s/' + token + '/download') + '?' + OC.buildQueryString({path: path});
 
 				var filesPart = '';
-				if (_.isArray(filename)) {
-					_.each(filename, function(name) {
-						filesPart += '&files[]=' + encodeURIComponent(name);
-					});
-				} else {
-					filesPart = '&files=' + encodeURIComponent(filename);
+				if (filename && !_.isArray(filename)) {
+					filename = [filename];
 				}
+				_.each(filename, function(name) {
+					filesPart += '&files[]=' + encodeURIComponent(name);
+				});
 				return base + filesPart;
 			};
 

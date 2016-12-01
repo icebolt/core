@@ -82,6 +82,10 @@ describe('OCA.Files.Files tests', function() {
 			var url = Files.getDownloadUrl('test file.txt', '/');
 			expect(url).toEqual(OC.webroot + '/remote.php/webdav/test%20file.txt');
 		});
+		it('returns the webdav download URL when single files in array specified', function() {
+			var url = Files.getDownloadUrl(['test file.txt'], '/subdir');
+			expect(url).toEqual(OC.webroot + '/remote.php/webdav/subdir/test%20file.txt');
+		});
 		it('returns the ajax download URL when multiple files specified', function() {
 			var url = Files.getDownloadUrl(['test file.txt', 'abc.txt'], '/subdir');
 			expect(url).toEqual(OC.webroot + '/index.php/apps/files/ajax/download.php?dir=%2Fsubdir&files[]=test%20file.txt&files[]=abc.txt');

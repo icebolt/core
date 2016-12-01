@@ -388,11 +388,8 @@ class ShareController extends Controller {
 		}
 
 		$files_list = $files;
-		if (!is_null($files)) { // download selected files
-			// in case we get only a single file
-			if (!is_array($files_list)) {
-				$files_list = [(string)$files_list];
-			}
+		if (!is_null($files) && !is_array($files_list)) {
+			throw new NotFoundException();
 		}
 
 		$userFolder = $this->rootFolder->getUserFolder($share->getShareOwner());
