@@ -163,11 +163,13 @@ class Manager extends PublicEmitter implements IGroupManager {
 		foreach ($this->backends as $backend) {
 			if ($backend instanceof IGroupBackend) {
 				$groupData = $backend->getGroup($gid);
-				// take the display name from the first backend that has a non-null one
-				if (is_null($displayName) && isset($groupData['displayName'])) {
-					$displayName = $groupData['displayName'];
+				if (is_array($groupData)) {
+					// take the display name from the first backend that has a non-null one
+					if (is_null($displayName) && isset($groupData['displayName'])) {
+						$displayName = $groupData['displayName'];
+					}
+					$backends[] = $backend;
 				}
-				$backends[] = $backend;
 			} else if ($backend->groupExists($gid)) {
 				$backends[] = $backend;
 			}

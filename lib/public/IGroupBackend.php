@@ -31,7 +31,8 @@ interface IGroupBackend extends GroupInterface {
 	 * Returns a specific group by group id
 	 *
 	 * @param string $gid group id
-	 * @return array array of group attributes with "gid" and "displayName" as keys
+	 * @return array|null array of group attributes with "gid" and "displayName" as keys,
+	 * or null if not found
 	 */
 	public function getGroup($gid);
 
