@@ -72,11 +72,7 @@ class Group implements IGroup {
 		$this->backends = $backends;
 		$this->userManager = $userManager;
 		$this->emitter = $emitter;
-		if (is_null($displayName)) {
-			$this->displayName = $gid;
-		} else {
-			$this->displayName = $displayName;
-		}
+		$this->displayName = $displayName;
 	}
 
 	public function getGID() {
@@ -84,6 +80,9 @@ class Group implements IGroup {
 	}
 
 	public function getDisplayName() {
+		if (is_null($this->displayName)) {
+			return $this->gid;
+		}
 		return $this->displayName;
 	}
 
