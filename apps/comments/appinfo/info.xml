@@ -13,4 +13,13 @@
 	<types>
 		<logging/>
 	</types>
+	<sabre>
+		<plugins>
+			<plugin>OCA\Comments\Dav\CommentsPlugin</plugin>
+			<plugin>OCA\Comments\Dav\CommentPropertiesPlugin</plugin>
+		</plugins>
+		<collections>
+			<collection>OCA\Comments\Dav\RootCollection</collection>
+		</collections>
+	</sabre>
 </info>

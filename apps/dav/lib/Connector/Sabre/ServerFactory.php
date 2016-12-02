@@ -157,7 +157,6 @@ class ServerFactory {
 					$userFolder,
 					\OC::$server->getShareManager()
 				));
-				$server->addPlugin(new \OCA\DAV\Connector\Sabre\CommentPropertiesPlugin(\OC::$server->getCommentsManager(), $this->userSession));
 				$server->addPlugin(new \OCA\DAV\Connector\Sabre\FilesReportPlugin(
 					$objectTree,
 					$view,

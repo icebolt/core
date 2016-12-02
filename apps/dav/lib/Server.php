@@ -28,10 +28,8 @@ namespace OCA\DAV;
 
 use OCA\DAV\CalDAV\Schedule\IMipPlugin;
 use OCA\DAV\CardDAV\ImageExportPlugin;
-use OCA\DAV\Comments\CommentsPlugin;
 use OCA\DAV\Connector\Sabre\Auth;
 use OCA\DAV\Connector\Sabre\BlockLegacyClientPlugin;
-use OCA\DAV\Connector\Sabre\CommentPropertiesPlugin;
 use OCA\DAV\Connector\Sabre\CopyEtagHeaderPlugin;
 use OCA\DAV\Connector\Sabre\DavAclPlugin;
 use OCA\DAV\Connector\Sabre\DummyGetResponsePlugin;
@@ -138,12 +136,6 @@ class Server {
 			\OC::$server->getUserSession()
 		));
 
-		// comments plugin
-		$this->server->addPlugin(new CommentsPlugin(
-			\OC::$server->getCommentsManager(),
-			\OC::$server->getUserSession()
-		));
-
 		$this->server->addPlugin(new CopyEtagHeaderPlugin());
 
 		// Some WebDAV clients do require Class 2 WebDAV support (locking), since
@@ -201,10 +193,6 @@ class Server {
 					$userSession,
 					$userFolder,
 					\OC::$server->getShareManager()
-				));
-				$this->server->addPlugin(new CommentPropertiesPlugin(
-					\OC::$server->getCommentsManager(),
-					$userSession
 				));
 				if (!is_null($view)) {
 					$this->server->addPlugin(new FilesReportPlugin(

@@ -19,7 +19,7 @@
  *
  */
 
-namespace OCA\DAV\Connector\Sabre;
+namespace OCA\Comments\Dav;
 
 use OCP\Comments\ICommentsManager;
 use OCP\IUserSession;
@@ -59,6 +59,9 @@ class CommentPropertiesPlugin extends ServerPlugin {
 	 */
 	function initialize(\Sabre\DAV\Server $server) {
 		$this->server = $server;
+		if ($this->userSession === null || $this->userSession->getUser() === null) {
+			return;
+		}
 		$this->server->on('propFind', [$this, 'handleGetProperties']);
 	}
 
