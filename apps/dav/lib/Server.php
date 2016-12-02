@@ -49,11 +49,16 @@ use OCP\SabrePluginEvent;
 use Sabre\CardDAV\VCFExportPlugin;
 use Sabre\DAV\Auth\Plugin;
 use OCA\DAV\Connector\Sabre\TagsPlugin;
+use Sabre\DAV\ServerPlugin;
+use Sabre\DAV\ICollection;
 
 class Server {
 
 	/** @var IRequest */
 	private $request;
+
+	/** @var RootCollection */
+	private $rootCollection;
 
 	public function __construct(IRequest $request, $baseUri) {
 		$this->request = $request;
@@ -62,8 +67,8 @@ class Server {
 		$mailer = \OC::$server->getMailer();
 		$dispatcher = \OC::$server->getEventDispatcher();
 
-		$root = new RootCollection();
-		$this->server = new \OCA\DAV\Connector\Sabre\Server($root);
+		$this->rootCollection = new RootCollection();
+		$this->server = new \OCA\DAV\Connector\Sabre\Server($this->rootCollection);
 
 		// Backends
 		$authBackend = new Auth(
@@ -215,6 +220,20 @@ class Server {
 				}
 			}
 		});
+	}
+
+	/**
+	 * Adds a collection to the root collection
+	 */
+	public function addCollection(ICollection $collection) {
+		$this->rootCollection->addChild($collection);
+	}
+
+	/**
+	 * Adds a Sabre plugin to the Sabre Server
+	 */
+	public function addPlugin(ServerPlugin $plugin) {
+		$this->server->addPlugin($plugin);
 	}
 
 	public function exec() {

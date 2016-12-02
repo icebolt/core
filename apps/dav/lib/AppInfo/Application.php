@@ -50,6 +50,20 @@ class Application extends App {
 	}
 
 	/**
+	 * Returns an initialized Sabre server instance
+	 *
+	 * @return \OCA\DAV\Server server instance
+	 */
+	public function createSabreServer($baseuri) {
+		$request = $this->getContainer()->getServer()->getRequest();
+		$server = new \OCA\DAV\Server($request, $baseuri);
+
+		$this->registerSabrePluginsFromApps($server);
+
+		return $server;
+	}
+
+	/**
 	 * @param IManager $contactsManager
 	 * @param string $userID
 	 */
@@ -103,6 +117,84 @@ class Application extends App {
 
 	public function getSyncService() {
 		return $this->getContainer()->query(SyncService::class);
+	}
+
+	private function registerSabrePluginsFromApps(\OCA\DAV\Server $server) {
+		\OC_App::loadApps();
+		foreach ($this->getContainer()->getServer()->getAppManager()->getInstalledApps() as $app) {
+			// FIXME: switch to public API once available
+			$appPath = \OC_App::getAppPath($app);
+			if($appPath === false) {
+				continue;
+			}
+			// FIXME: switch to public API once available
+			// load commands using info.xml
+			$info = \OC_App::getAppInfo($app);
+			$plugins = $this->loadSabrePluginsFromInfoXml($this->extractPluginList($info));
+			foreach ($plugins as $plugin) {
+				$server->addPlugin($plugin);
+			}
+			$collections = $this->loadSabreCollectionsFromInfoXml($this->extractCollectionList($info));
+			foreach ($collections as $collection) {
+				$server->addCollection($collection);
+			}
+		}
+	}
+
+	private function extractPluginList($array) {
+		if (isset($array['sabre']) && is_array($array['sabre'])) {
+			if (isset($array['sabre']['plugins']) && is_array($array['sabre']['plugins'])) {
+				if (isset($array['sabre']['plugins']['plugin']))
+					$items = $array['sabre']['plugins']['plugin'];
+				   	if (!is_array($items)) {
+						$items = [$items];
+					return $items;
+				}
+			}
+		}
+		return [];
+	}
+
+	private function extractCollectionList($array) {
+		if (isset($array['sabre']) && is_array($array['sabre'])) {
+			if (isset($array['sabre']['collections']) && is_array($array['sabre']['collections'])) {
+				if (isset($array['sabre']['collections']['collection']))
+					$items = $array['sabre']['collections']['collection'];
+				   	if (!is_array($items)) {
+						$items = [$items];
+					return $items;
+				}
+			}
+		}
+		return [];
+	}
+
+	private function loadSabrePluginsFromInfoXml($plugins) {
+		return array_map(function($plugin) {
+			try {
+				return \OC::$server->query($plugin);
+			} catch (QueryException $e) {
+				if (class_exists($command)) {
+					return new $plugin();
+				} else {
+					throw new \Exception("Sabre plugin class '$plugin' is unknown and could not be loaded");
+				}
+			}
+		}, $plugins);
+	}
+
+	private function loadSabreCollectionsFromInfoXml($plugins) {
+		return array_map(function($plugin) {
+			try {
+				return \OC::$server->query($plugin);
+			} catch (QueryException $e) {
+				if (class_exists($command)) {
+					return new $plugin();
+				} else {
+					throw new \Exception("Sabre collection class '$plugin' is unknown and could not be loaded");
+				}
+			}
+		}, $plugins);
 	}
 
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Thomas Müller <thomas.mueller@tmit.eu>
  *
@@ -24,6 +25,7 @@ set_time_limit(0);
 // Turn off output buffering to prevent memory problems
 \OC_Util::obEnd();
 
-$request = \OC::$server->getRequest();
-$server = new \OCA\DAV\Server($request, $baseuri);
+$application = new \OCA\DAV\AppInfo\Application();
+
+$server = $application->createSabreServer($baseuri);
 $server->exec();
