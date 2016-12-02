@@ -144,10 +144,11 @@ class Application extends App {
 	private function extractPluginList($array) {
 		if (isset($array['sabre']) && is_array($array['sabre'])) {
 			if (isset($array['sabre']['plugins']) && is_array($array['sabre']['plugins'])) {
-				if (isset($array['sabre']['plugins']['plugin']))
+				if (isset($array['sabre']['plugins']['plugin'])) {
 					$items = $array['sabre']['plugins']['plugin'];
 				   	if (!is_array($items)) {
 						$items = [$items];
+					}
 					return $items;
 				}
 			}
@@ -158,10 +159,11 @@ class Application extends App {
 	private function extractCollectionList($array) {
 		if (isset($array['sabre']) && is_array($array['sabre'])) {
 			if (isset($array['sabre']['collections']) && is_array($array['sabre']['collections'])) {
-				if (isset($array['sabre']['collections']['collection']))
+				if (isset($array['sabre']['collections']['collection'])) {
 					$items = $array['sabre']['collections']['collection'];
 				   	if (!is_array($items)) {
 						$items = [$items];
+					}
 					return $items;
 				}
 			}
