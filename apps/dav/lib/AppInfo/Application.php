@@ -58,7 +58,10 @@ class Application extends App {
 		$request = $this->getContainer()->getServer()->getRequest();
 		$server = new \OCA\DAV\Server($request, $baseuri);
 
-		$this->registerSabrePluginsFromApps($server);
+		// wait until after auth
+		$server->getSabreServer()->on('beforeMethod', function() use ($server) {
+			$this->registerSabrePluginsFromApps($server);
+		});
 
 		return $server;
 	}

@@ -224,6 +224,10 @@ class Server {
 		$this->server->addPlugin($plugin);
 	}
 
+	public function getSabreServer() {
+		return $this->server;
+	}
+
 	public function exec() {
 		$this->server->exec();
 	}
